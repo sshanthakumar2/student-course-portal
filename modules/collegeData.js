@@ -65,15 +65,25 @@ module.exports.getCourses = function(){
        }); 
 };
 
-// Get a specific student by their student number
 module.exports.getStudentByNum = function (num) {
-    return new Promise(function (resolve, reject) { 
+    return new Promise((resolve, reject) => {
         Student.findAll({
             where: { studentNum: num }
         })
-            .then(data => resolve(data[0]))
-            .catch(() => reject("no results returned"));
-       }); 
+        .then(data => {
+            if (data.length > 0) {
+                console.log("Student found:", data[0]);
+                resolve(data[0]);
+            } else {
+                console.log("No student found with number:", num);
+                reject("no results returned");
+            }
+        })
+        .catch(err => {
+            console.error("Error in getStudentByNum:", err);
+            reject("no results returned");
+        });
+    });
 };
 
 // Get students filtered by a specific course
