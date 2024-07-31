@@ -1,0 +1,111 @@
+/* import statement for google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap');
+
+/* App Background */
+body, html{
+    background: linear-gradient(to bottom, #715796, #d3cfd8);
+    background-color: #f0f0f0;
+    background-image: url('https://freevector-images.s3.amazonaws.com/uploads/vector/preview/40659/FreevectorPurple-BackgroundAS0621_generated.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    overflow: auto;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Navigation Bar */
+.bg-light{
+    background-color: #e3e7f4 !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 50px;
+}
+
+/* Navigation "Brand" */
+.navbar-brand{
+    font-family: 'Pacifico', cursive;
+    color: #2c05ae !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation Links */
+.nav-link{
+    font-family: 'Pacifico', cursive;
+    color: #7d7a7a;
+}
+
+.nav-link:hover{
+    color: #26076d !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* "Primary" Button */
+.btn-primary{
+    background-color: #007bff;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.btn-primary:hover{
+    background-color: #0056b3;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Table cells inside "odd" numbered table rows */
+.table tr:nth-child(odd) td{
+    background-color: #f0f0f0;
+    background: linear-gradient(to bottom, #f2f2f2, #e6e6e6);
+}
+
+/* All "Heading" elements */
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Pacifico', cursive;
+    color: #343a40;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* All "Anchor" elements */
+a{
+    color: #007bff;
+}
+
+a:hover{
+    color: #0056b3;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Fieldset "Legends" */
+legend{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-family: 'Pacifico', cursive;
+    color: #343a40;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tables */
+.table{
+    border: 1px solid #ddd;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+/* Images */
+img{
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
