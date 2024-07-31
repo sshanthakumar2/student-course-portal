@@ -107,37 +107,45 @@ app.get("/course/:id", (req, res) => {
 });
 
 app.get("/student/:studentNum", (req, res) => {
-    let viewData = {};
+    // initialize an empty object to store the values
+    let viewData = {}; 
 
+    // Fetch student data
     collegeData.getStudentByNum(req.params.studentNum)
         .then(studentData => {
-            console.log("Fetched student data:", studentData);
             if (studentData) {
-                viewData.student = studentData;
+                viewData.student = studentData; // Store student data in the "viewData" object as "student"
             } else {
-                viewData.student = null;
+                viewData.student = null; // Set student to null if none were returned
             }
-            return collegeData.getCourses();
+            // Fetch course data after fetching student data
+            return collegeData.getCourses(); 
         })
         .then(courseData => {
-            console.log("Fetched course data:", courseData);
-            viewData.courses = courseData;
+            viewData.courses = courseData; // Store course data in the "viewData" object as "courses"
+            // Loop through viewData.courses and mark the matching course as selected
             if (viewData.student) {
                 for (let i = 0; i < viewData.courses.length; i++) {
                     if (viewData.courses[i].courseId == viewData.student.course) {
-                        viewData.courses[i].selected = true;
+                        viewData.courses[i].selected = true; 
                     }
                 }
             }
-            res.render("student", { viewData: viewData });
         })
-        .catch(err => {
-            console.error("Error fetching data:", err);
+        .catch(() => {
+            // Handle errors for either student or courses fetch
+            if (!viewData.student) {
+                res.status(404).send("Student Not Found"); // if no student - return an error
+                return; // Exit to avoid further processing
+            }
+            viewData.courses = []; // Set courses to empty if there was an error
+        })
+        .finally(() => {
+            // Finalize response rendering
             if (viewData.student === null) {
-                res.status(404).send("Student Not Found");
+                res.status(404).send("Student Not Found"); // If no student - return an error
             } else {
-                viewData.courses = [];
-                res.render("student", { viewData: viewData });
+                res.render("student", { viewData: viewData }); // Render the "student" view with viewData
             }
         });
 });
