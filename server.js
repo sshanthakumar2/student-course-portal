@@ -108,7 +108,7 @@ app.get("/course/:id", (req, res) => {
 
 app.get("/student/:studentNum", (req, res) => {
     // initialize an empty object to store the values
-    let viewData = {}; 
+    let viewData = {};
 
     // Fetch student data
     collegeData.getStudentByNum(req.params.studentNum)
@@ -119,7 +119,7 @@ app.get("/student/:studentNum", (req, res) => {
                 viewData.student = null; // Set student to null if none were returned
             }
             // Fetch course data after fetching student data
-            return collegeData.getCourses(); 
+            return collegeData.getCourses();
         })
         .then(courseData => {
             viewData.courses = courseData; // Store course data in the "viewData" object as "courses"
@@ -127,25 +127,18 @@ app.get("/student/:studentNum", (req, res) => {
             if (viewData.student) {
                 for (let i = 0; i < viewData.courses.length; i++) {
                     if (viewData.courses[i].courseId == viewData.student.course) {
-                        viewData.courses[i].selected = true; 
+                        viewData.courses[i].selected = true;
                     }
                 }
             }
+            res.render("student", { viewData: viewData });
         })
-        .catch(() => {
-            // Handle errors for either student or courses fetch
-            if (!viewData.student) {
-                res.status(404).send("Student Not Found"); // if no student - return an error
-                return; // Exit to avoid further processing
-            }
-            viewData.courses = []; // Set courses to empty if there was an error
-        })
-        .finally(() => {
-            // Finalize response rendering
+        .catch((err) => {
+            console.error(err);
             if (viewData.student === null) {
-                res.status(404).send("Student Not Found"); // If no student - return an error
+                res.status(404).send("Student Not Found"); // if no student - return an error
             } else {
-                res.render("student", { viewData: viewData }); // Render the "student" view with viewData
+                res.render("student", { viewData: viewData });
             }
         });
 });
