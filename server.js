@@ -106,38 +106,49 @@ app.get("/course/:id", (req, res) => {
         });
 });
 
-app.get("/student/:studentNum", (req, res) => { 
-    // initialize an empty object to store the values 
+app.get("/student/:studentNum", (req, res) => {
+    // initialize an empty object to store the values
     let viewData = {}; 
-    data.getStudentByNum(req.params.studentNum).then((data) => { 
-        if (data) { 
-            viewData.student = data; //store student data in the "viewData" object as "student" 
-        } else { 
-            viewData.student = null; // set student to null if none were returned 
-        } 
-    }).catch(() => { 
-        viewData.student = null; // set student to null if there was an error 
-    }).then(data.getCourses) 
-    .then((data) => { 
-        viewData.courses = data; // store course data in the "viewData" object as "courses" 
-    // loop through viewData.courses and once we have found the courseId that matches 
-    // the student's "course" value, add a "selected" property to the matching 
-    // viewData.courses object 
-    for (let i = 0; i < viewData.courses.length; i++) { 
-        if (viewData.courses[i].courseId == viewData.student.course) { 
-            viewData.courses[i].selected = true; 
-        } 
-    } 
-    }).catch(() => { 
-        viewData.courses = []; // set courses to empty if there was an error 
-    }).then(() => { 
-    if (viewData.student == null) { // if no student - return an error 
-        res.status(404).send("Student Not Found"); 
-    } else { 
-        res.render("student", { viewData: viewData }); // render the "student" view 
-    } 
-    }); 
-}); 
+
+    // Fetch student data
+    data.getStudentByNum(req.params.studentNum)
+        .then(studentData => {
+            if (studentData) {
+                viewData.student = studentData; // Store student data in the "viewData" object as "student"
+            } else {
+                viewData.student = null; // Set student to null if none were returned
+            }
+            // Fetch course data after fetching student data
+            return data.getCourses(); 
+        })
+        .then(courseData => {
+            viewData.courses = courseData; // Store course data in the "viewData" object as "courses"
+            // Loop through viewData.courses and mark the matching course as selected
+            if (viewData.student) {
+                for (let i = 0; i < viewData.courses.length; i++) {
+                    if (viewData.courses[i].courseId == viewData.student.course) {
+                        viewData.courses[i].selected = true; 
+                    }
+                }
+            }
+        })
+        .catch(() => {
+            // Handle errors for either student or courses fetch
+            if (!viewData.student) {
+                res.status(404).send("Student Not Found"); // if no student - return an error
+                return; // Exit to avoid further processing
+            }
+            viewData.courses = []; // Set courses to empty if there was an error
+        })
+        .finally(() => {
+            // Finalize response rendering
+            if (viewData.student === null) {
+                res.status(404).send("Student Not Found"); // If no student - return an error
+            } else {
+                res.render("student", { viewData: viewData }); // Render the "student" view with viewData
+            }
+        });
+});
 
 // Route to handle the home page
 app.get("/",(req,res)=>{
