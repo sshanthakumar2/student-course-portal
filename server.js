@@ -111,7 +111,7 @@ app.get("/student/:studentNum", (req, res) => {
     let viewData = {}; 
 
     // Fetch student data
-    data.getStudentByNum(req.params.studentNum)
+    collegeData.getStudentByNum(req.params.studentNum)
         .then(studentData => {
             if (studentData) {
                 viewData.student = studentData; // Store student data in the "viewData" object as "student"
