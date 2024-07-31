@@ -119,7 +119,7 @@ app.get("/student/:studentNum", (req, res) => {
                 viewData.student = null; // Set student to null if none were returned
             }
             // Fetch course data after fetching student data
-            return data.getCourses(); 
+            return collegeData.getCourses(); 
         })
         .then(courseData => {
             viewData.courses = courseData; // Store course data in the "viewData" object as "courses"
