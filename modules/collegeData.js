@@ -1,18 +1,27 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const path = require("path");
 
-const isProd = process.env.NODE_ENV === "production";
-const storagePath = isProd
-  ? "/tmp/college.db"                             // Vercel writable temp dir (ephemeral)
-  : path.join(__dirname, "../data/college.db");   // local persistent
+let sequelize;
+if (process.env.DATABASE_URL) {
+  // Vercel / Production (Neon Postgres)
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: "postgres",
+    protocol: "postgres",
+    dialectOptions: {
+      ssl: { require: true, rejectUnauthorized: false }
+    },
+    logging: false
+  });
+} else {
+  // Local (SQLite)
+  sequelize = new Sequelize({
+    dialect: "sqlite",
+    storage: path.join(__dirname, "../data/college.db"),
+    logging: false
+  });
+}
 
-const sequelize = new Sequelize({
-  dialect: "sqlite",
-  storage: storagePath,
-  logging: false
-});
-
-// Models
+// MODELS
 const Student = sequelize.define("Student", {
   studentNum: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   firstName: DataTypes.STRING,
@@ -34,19 +43,23 @@ const Course = sequelize.define("Course", {
 
 Course.hasMany(Student, { foreignKey: "course" });
 
-// Init
+// INIT
 async function initialize() {
   await sequelize.authenticate();
   await sequelize.sync();
   return true;
 }
 
-// READS: return plain objects so Handlebars can access without proto warnings
+// READS (return plain objects for Handlebars)
 function getAllStudents() {
   return Student.findAll({ order: [["studentNum", "ASC"]], raw: true });
 }
 function getStudentsByCourse(courseId) {
-  return Student.findAll({ where: { course: courseId }, order: [["studentNum", "ASC"]], raw: true });
+  return Student.findAll({
+    where: { course: courseId },
+    order: [["studentNum", "ASC"]],
+    raw: true
+  });
 }
 function getStudentByNum(studentNum) {
   return Student.findOne({ where: { studentNum }, raw: true });
@@ -58,7 +71,7 @@ function getCourseById(id) {
   return Course.findOne({ where: { courseId: id }, raw: true });
 }
 
-// WRITES: normalize inputs
+// WRITES
 async function addStudent(studentData) {
   studentData.TA = !!studentData.TA;
   for (const k in studentData) {
