@@ -8,7 +8,7 @@
 * Student ID: 147633234 
 * Date: 1st August 2024 
 * 
-* Online (Heroku) Link: https://fathomless-island-58077-462a4b201c3e.herokuapp.com/ 
+* 
 * 
 ********************************************************************************/
 
@@ -255,13 +255,13 @@ app.use((req,res)=>{
     res.status(404).send("Page Not THERE, Are you sure of the path?");
 });
 
-// setup http server to listen on HTTP_PORT
-collegeData.initialize().then(() => {
-    app.listen(HTTP_PORT,()=>{
-        console.log("server listening on port:" + HTTP_PORT);
-    });
-}).catch((err) => {
-        console.error("Failed to initialize the data", err);
-});
+// // setup http server to listen on HTTP_PORT
+// collegeData.initialize().then(() => {
+//     app.listen(HTTP_PORT,()=>{
+//         console.log("server listening on port:" + HTTP_PORT);
+//     });
+// }).catch((err) => {
+//         console.error("Failed to initialize the data", err);
+// });
     
 
