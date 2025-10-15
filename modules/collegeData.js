@@ -4,7 +4,9 @@ const path = require("path");
 // Use SQLite locally (no credentials)
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: path.join(__dirname, "../data/college.db"),
+  storage: process.env.NODE_ENV === "production"
+    ? "/tmp/college.db"  // Vercel’s writable temp dir
+    : "./data/college.db", // local dev
   logging: false
 });
 
