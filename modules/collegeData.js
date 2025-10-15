@@ -1,16 +1,18 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const path = require("path");
 
-// Use SQLite locally (no credentials)
+const isProd = process.env.NODE_ENV === "production";
+const storagePath = isProd
+  ? "/tmp/college.db"                             // Vercel writable temp dir (ephemeral)
+  : path.join(__dirname, "../data/college.db");   // local persistent
+
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: process.env.NODE_ENV === "production"
-    ? "/tmp/college.db"  // Vercel’s writable temp dir
-    : "./data/college.db", // local dev
+  storage: storagePath,
   logging: false
 });
 
-// MODELS
+// Models
 const Student = sequelize.define("Student", {
   studentNum: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   firstName: DataTypes.STRING,
@@ -32,37 +34,32 @@ const Course = sequelize.define("Course", {
 
 Course.hasMany(Student, { foreignKey: "course" });
 
-// INIT
+// Init
 async function initialize() {
-  try {
-    await sequelize.authenticate();
-    await sequelize.sync();
-    return true;
-  } catch (e) {
-    console.error("initialize() error:", e);
-    throw new Error("unable to sync the database: " + (e?.message || e));
-  }
+  await sequelize.authenticate();
+  await sequelize.sync();
+  return true;
 }
 
-// ---------- STUDENTS ----------
+// READS: return plain objects so Handlebars can access without proto warnings
 function getAllStudents() {
   return Student.findAll({ order: [["studentNum", "ASC"]], raw: true });
 }
-
 function getStudentsByCourse(courseId) {
-  return Student.findAll({
-    where: { course: courseId },
-    order: [["studentNum", "ASC"]],
-    raw: true
-  });
+  return Student.findAll({ where: { course: courseId }, order: [["studentNum", "ASC"]], raw: true });
 }
-
 function getStudentByNum(studentNum) {
   return Student.findOne({ where: { studentNum }, raw: true });
 }
+function getCourses() {
+  return Course.findAll({ order: [["courseId", "ASC"]], raw: true });
+}
+function getCourseById(id) {
+  return Course.findOne({ where: { courseId: id }, raw: true });
+}
 
+// WRITES: normalize inputs
 async function addStudent(studentData) {
-  // normalize
   studentData.TA = !!studentData.TA;
   for (const k in studentData) {
     if (typeof studentData[k] === "string") {
@@ -95,15 +92,6 @@ async function updateStudent(studentData) {
 
 function deleteStudentByNum(studentNum) {
   return Student.destroy({ where: { studentNum } });
-}
-
-// ---------- COURSES ----------
-function getCourses() {
-  return Course.findAll({ order: [["courseId", "ASC"]], raw: true });
-}
-
-function getCourseById(id) {
-  return Course.findOne({ where: { courseId: id }, raw: true });
 }
 
 async function addCourse(courseData) {
